@@ -1,29 +1,59 @@
 import { StatusBar } from 'expo-status-bar';
-import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, View, TouchableOpacity} from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, View, TouchableOpacity, Keyboard} from 'react-native';
 import Task from './component/Task';
+import DoneTasks from './component/DoneTasks';
 import React, {useState} from 'react';
 
 export default function App() {
   const [task, setTask] = useState();
   const [taskItems, setTaskItems] = useState([])
+  const [doneItems, setdontItems] = useState([])
 
   const handleAddTask = () =>{
+    Keyboard.dismiss();
     console.log(task);
     setTaskItems([...taskItems, task])
     setTask('');
+    
+  }
+
+  const completeTask = (index) =>{
+    let itemcpy = [...taskItems];
+    let newDone = itemcpy[index]
+    itemcpy.splice(index, 1);
+    setdontItems([...doneItems, newDone])
+    setTaskItems(itemcpy);
   }
 
 
   return (
     <View style = {styles.container}>
       <View style={styles.tasksWrapper}>
-        <Text style = {styles.sectionTitle}>Today's Tasks</Text>
+        <Text style = {styles.sectionTitle}>Today's Tasks✔</Text>
 
 
         {/* TODAY'S Tasks */}
         <View style = {styles.items}>
+        {
+          taskItems.map((item, index) => {
+            return(
+            <TouchableOpacity key={index} onPress={() => completeTask(index)}>
+            <Task text = {item} />
+            </TouchableOpacity>
+            )
+          })
+        }
 
-          <Task text = {'Task 1'}/>
+        {
+          doneItems.map((done) => {
+            return(
+            <TouchableOpacity>
+            <DoneTasks text = {done} />
+            </TouchableOpacity>
+            )
+          })
+          
+        }
 
         </View>
       </View>
@@ -56,7 +86,7 @@ const styles = StyleSheet.create({
 
   sectionTitle:{
     fontSize: 24,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
 
   items: {
